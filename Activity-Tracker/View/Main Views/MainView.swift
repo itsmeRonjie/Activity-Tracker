@@ -69,6 +69,15 @@ struct MainView: View {
                 .listStyle(.plain)
                 .scrollIndicators(.hidden)
                 
+                TextField(
+                    "Enter new activity name",
+                    text: $newName
+                )
+                .padding()
+                .background(.blue.opacity(0.3))
+                .clipShape(RoundedRectangle(cornerRadius: 10))
+                .shadow(color: .gray, radius: 2, x: 0, y:2)
+                
                 if let currentActivty {
                     Slider(
                         value: $hoursPerDay,
@@ -95,7 +104,18 @@ struct MainView: View {
     }
     
     private func add() {
-        // TODO: Add Activity
+        if newName.count > 2 && !activities
+            .contains(where: { $0.name.lowercased() == newName.lowercased() }) {
+            let activity = Activity(
+                name: newName,
+                hoursPerDay: hoursPerDay
+            )
+            
+            context.insert(activity)
+            newName = ""
+            
+            currentActivty =  activity
+        }
     }
     
     private func delete(at offsets: IndexSet) {

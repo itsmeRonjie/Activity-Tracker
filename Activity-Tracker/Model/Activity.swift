@@ -15,8 +15,7 @@ class Activity {
     var name: String
     var hoursPerDay: Double
     
-    init(id: String, name: String, hoursPerDay: Double = 0) {
-        self.id = id
+    init(name: String, hoursPerDay: Double = 0) {
         self.name = name
         self.hoursPerDay = hoursPerDay
     }
