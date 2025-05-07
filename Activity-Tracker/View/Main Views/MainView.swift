@@ -41,24 +41,42 @@ struct MainView: View {
     var body: some View {
         NavigationStack {
             VStack {
-                Chart {
-                    ForEach(activities) { activity in
-                        let isSelected: Bool = activity == currentActivty
-                        SectorMark(
-                            angle: .value("Activities", activity.hoursPerDay),
-                            innerRadius: .ratio(0.6),
-                            outerRadius: .ratio(
-                                isSelected ? 1.05 : 0.95
-                            ),
-                            angularInset: 1
-                        )
-                        .foregroundStyle(.red)
+                if activities.isEmpty {
+                    ContentUnavailableView(
+                        "Enter an Activity",
+                        systemImage: "list.dash"
+                    )
+                } else {
+                    Chart {
+                        ForEach(activities) { activity in
+                            let isSelected: Bool = activity == currentActivty
+                            SectorMark(
+                                angle: .value("Activities", activity.hoursPerDay),
+                                innerRadius: .ratio(0.6),
+                                outerRadius: .ratio(isSelected ? 1.05 : 0.95),
+                                angularInset: 1
+                            )
+                            .foregroundStyle(.red)
+                        }
                     }
+                    .chartAngleSelection(value: $selectCount)
                 }
-                .chartAngleSelection(value: $selectCount)
                 
-                List(activities) { activity in
-                    ActivityRow(activity: activity)
+                List {
+                    ForEach(activities) { activity in
+                        ActivityRow(activity: activity)
+                            .containerShape(Rectangle())
+                            .listRowBackground(
+                                currentActivty?.name == activity.name ? Color.blue
+                                    .opacity(0.3) : Color.clear
+                            )
+                            .onTapGesture {
+                                withAnimation {
+                                    currentActivty = activity
+                                    hoursPerDay = activity.hoursPerDay
+                                }
+                            }
+                    }
                 }
                 .listStyle(.plain)
                 .scrollIndicators(.hidden)
@@ -78,8 +96,14 @@ struct MainView: View {
                         in: 0...maxHoursSelected,
                         step: step
                     )
-                    .onChange(of: hoursPerDay) { oldValue, newValue in
-                        // TODO
+                    .onChange(of: hoursPerDay) {
+ oldValue,
+                        newValue in
+                        if let index = self.activities.firstIndex(
+                            where: {$0.name == currentActivty
+                                .name}) {
+                            activities[index].hoursPerDay = newValue
+                        }
                     }
                 }
                 
@@ -94,6 +118,16 @@ struct MainView: View {
             }
             .padding()
             .navigationTitle("Activity Tracker")
+            .toolbar {
+                EditButton()
+                    .onChange(of: selectCount) { oldValue, newValue in
+                        if let newValue {
+                            withAnimation {
+                                getSelected(value: newValue)
+                            }
+                        }
+                    }
+            }
         }
     }
     
@@ -113,7 +147,14 @@ struct MainView: View {
     }
     
     private func delete(at offsets: IndexSet) {
-        // TODO: Delete Activity
+        offsets.forEach { index in
+            let activity = activities[index]
+            context.delete(activity)
+        }
+    }
+    
+    private func getSelected(value: Int) {
+        
     }
     
 }
