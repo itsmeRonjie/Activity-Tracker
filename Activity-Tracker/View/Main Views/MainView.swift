@@ -58,13 +58,7 @@ struct MainView: View {
                 .chartAngleSelection(value: $selectCount)
                 
                 List(activities) { activity in
-                    Text(activity.name)
-                        .onTapGesture {
-                            withAnimation {
-                                currentActivty = activity
-                                hoursPerDay = activity.hoursPerDay
-                            }
-                        }
+                    ActivityRow(activity: activity)
                 }
                 .listStyle(.plain)
                 .scrollIndicators(.hidden)
