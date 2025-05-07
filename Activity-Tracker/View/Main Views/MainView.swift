@@ -14,11 +14,30 @@ struct MainView: View {
     @Environment(\.modelContext) private var context
     
     @State private var newName: String = ""
-    @State private var newHoues: Double = 0
+    @State private var newHours: Double = 0
     @State private var currentActivty: Activity? = nil
+    @State private var hoursPerDay: Double = 0
     @State private var selectCount: Int?
     
-
+    var totalHours: Double {
+        var hours = 0.0
+        for activity in activities {
+            hours += activity.hoursPerDay
+        }
+        
+        return hours
+    }
+    
+    var remainingHours: Double {
+        24 - totalHours
+    }
+    
+    var maxHoursSelected: Double {
+        remainingHours + hoursPerDay
+    }
+    
+    let step: Double = 1
+    
     var body: some View {
         NavigationStack {
             VStack {
@@ -36,12 +55,53 @@ struct MainView: View {
                         .foregroundStyle(.red)
                     }
                 }
+                .chartAngleSelection(value: $selectCount)
+                
+                List(activities) { activity in
+                    Text(activity.name)
+                        .onTapGesture {
+                            withAnimation {
+                                currentActivty = activity
+                                hoursPerDay = activity.hoursPerDay
+                            }
+                        }
+                }
+                .listStyle(.plain)
+                .scrollIndicators(.hidden)
+                
+                if let currentActivty {
+                    Slider(
+                        value: $hoursPerDay,
+                        in: 0...maxHoursSelected,
+                        step: step
+                    )
+                    .onChange(of: hoursPerDay) { oldValue, newValue in
+                        // TODO
+                    }
+                }
+                
+                Button {
+                    add()
+                } label: {
+                    Text("Add")
+                }
+                .buttonStyle(.borderedProminent)
+                .disabled(remainingHours <= 0)
+
             }
             .padding()
             .navigationTitle("Activity Tracker")
         }
     }
-
+    
+    private func add() {
+        // TODO: Add Activity
+    }
+    
+    private func delete(at offsets: IndexSet) {
+        // TODO: Delete Activity
+    }
+    
 }
 
 #Preview {
