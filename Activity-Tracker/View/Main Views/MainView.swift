@@ -56,7 +56,9 @@ struct MainView: View {
                                 outerRadius: .ratio(isSelected ? 1.05 : 0.95),
                                 angularInset: 1
                             )
-                            .foregroundStyle(.red)
+                            .foregroundStyle(by: .value("activity", activity.name))
+                            .cornerRadius(5)
+                            .opacity(isSelected ? 1 : 0.7)
                         }
                     }
                     .chartAngleSelection(value: $selectCount)
@@ -77,6 +79,7 @@ struct MainView: View {
                                 }
                             }
                     }
+                    .onDelete(perform: delete)
                 }
                 .listStyle(.plain)
                 .scrollIndicators(.hidden)
@@ -134,6 +137,7 @@ struct MainView: View {
     private func add() {
         if newName.count > 2 && !activities
             .contains(where: { $0.name.lowercased() == newName.lowercased() }) {
+            hoursPerDay = 0
             let activity = Activity(
                 name: newName,
                 hoursPerDay: hoursPerDay
@@ -156,7 +160,6 @@ struct MainView: View {
     private func getSelected(value: Int) {
         
     }
-    
 }
 
 #Preview {
