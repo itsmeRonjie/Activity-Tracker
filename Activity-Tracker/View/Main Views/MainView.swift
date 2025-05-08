@@ -99,9 +99,7 @@ struct MainView: View {
                         in: 0...maxHoursSelected,
                         step: step
                     )
-                    .onChange(of: hoursPerDay) {
- oldValue,
-                        newValue in
+                    .onChange(of: hoursPerDay) { oldValue, newValue in
                         if let index = self.activities.firstIndex(
                             where: {$0.name == currentActivty
                                 .name}) {
@@ -158,7 +156,15 @@ struct MainView: View {
     }
     
     private func getSelected(value: Int) {
-        
+        var cumulativeTotal = 0.0
+        if let activity = activities.first(
+            where: {
+                cumulativeTotal += $0.hoursPerDay
+                return Int(cumulativeTotal) >= value
+            }
+        ) {
+            currentActivty = activity
+        }
     }
 }
 
