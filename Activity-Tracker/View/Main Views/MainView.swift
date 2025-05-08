@@ -62,6 +62,17 @@ struct MainView: View {
                         }
                     }
                     .chartAngleSelection(value: $selectCount)
+                    .chartBackground { _ in
+                        VStack {
+                            Image(systemName: "figure.walk")
+                                .foregroundStyle(.blue)
+                            
+                            if let currentActivty {
+                                let truncateName = String(currentActivty.name.prefix(15))
+                                Text(truncateName)
+                            }
+                        }
+                    }
                 }
                 
                 List {
